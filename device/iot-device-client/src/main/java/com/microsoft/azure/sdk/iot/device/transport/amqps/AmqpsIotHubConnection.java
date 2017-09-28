@@ -664,6 +664,8 @@ public final class AmqpsIotHubConnection extends BaseHandler
             {
                 openLock.notifyLock();
             }
+
+            this.currentReconnectionAttempt = 1;
         }
         logger.LogDebug("Exited from method %s", logger.getMethodName());
     }
