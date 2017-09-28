@@ -522,7 +522,7 @@ public class AmqpsIotHubConnectionTest {
         new NonStrictExpectations()
         {
             {
-                new IotHubReactor((Reactor) any);
+                new IotHubReactor((Reactor) any, true);
                 result = new IOException();
             }
         };
@@ -548,7 +548,7 @@ public class AmqpsIotHubConnectionTest {
         new Verifications()
         {
             {
-                new IotHubReactor((Reactor)any);
+                new IotHubReactor((Reactor)any, true);
                 times = 1;
                 mockOpenLock.waitLock(anyLong);
                 times = 1;
@@ -1820,27 +1820,5 @@ public class AmqpsIotHubConnectionTest {
         amqpsDeviceOperationsList.add(Deencapsulation.newInstance(AmqpsDeviceTelemetry.class, deviceId));
         new AmqpsIotHubConnection(mockConfig, amqpsDeviceOperationsList);
 
-    }
-
-    //Tests_SRS_AMQPSIOTHUBCONNECTION_34_043: [If the config is not using sas token authentication, this function shall throw an IOException.]
-    @Test (expected = IOException.class)
-    public void openThrowsIfNotUsingSasTokenAuth() throws IOException, InterruptedException
-    {
-        //arrange
-        baseExpectations();
-        new NonStrictExpectations()
-        {
-            {
-                mockConfig.getAuthenticationType();
-                result = DeviceClientConfig.AuthType.X509_CERTIFICATE;
-            }
-        };
-
-        ArrayList<AmqpsDeviceOperations> amqpsDeviceOperationsList = new ArrayList<AmqpsDeviceOperations>();
-        amqpsDeviceOperationsList.add(Deencapsulation.newInstance(AmqpsDeviceTelemetry.class, deviceId));
-        AmqpsIotHubConnection connection = new AmqpsIotHubConnection(mockConfig, amqpsDeviceOperationsList);
-
-        //act
-        connection.open();
     }
 }

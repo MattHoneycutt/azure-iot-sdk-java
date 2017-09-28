@@ -34,7 +34,7 @@ public class SendEventX509
                     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n" +
                     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n" +
                     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n" +
-                    "-----END EC PRIVATE KEY-----";
+                    "-----END EC PRIVATE KEY-----\n";
 
     private  static final int D2C_MESSAGE_TIMEOUT = 2000; // 2 seconds
     private  static List failedMessageListOnClose = new ArrayList(); // List of messages that failed on close
@@ -93,7 +93,7 @@ public class SendEventX509
             return;
         }
 
-        IotHubClientProtocol protocol = IotHubClientProtocol.MQTT;
+        IotHubClientProtocol protocol = IotHubClientProtocol.AMQPS;
 
         System.out.println("Successfully read input parameters.");
         System.out.format("Using communication protocol %s.\n", protocol.name());

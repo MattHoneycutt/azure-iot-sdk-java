@@ -12,9 +12,14 @@ public class IotHubReactor
 {
     private final Reactor reactor;
 
-    public IotHubReactor(Reactor reactor)
+    public IotHubReactor(Reactor reactor, boolean usingSasl)
     {
         this.reactor = reactor;
+        //TODO AMQPS_WS using token breaks if this new global handler is set, weirdly
+        if (!usingSasl)
+        {
+            this.reactor.setGlobalHandler(new IotHubIOHandler());
+        }
     }
     
     public void run() throws HandlerException

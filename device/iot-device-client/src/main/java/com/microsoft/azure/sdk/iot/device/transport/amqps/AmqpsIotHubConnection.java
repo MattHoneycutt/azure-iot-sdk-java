@@ -260,14 +260,15 @@ public final class AmqpsIotHubConnection extends BaseHandler
 
     private void openAsync() throws IOException
     {
+        boolean usingSasl = false;
         if (this.config.getAuthenticationType() == DeviceClientConfig.AuthType.SAS_TOKEN)
         {
             this.sasToken = this.config.getSasTokenAuthentication().getRenewedSasToken();
+            usingSasl = true;
         }
         else
         {
-            //Codes_SRS_AMQPSIOTHUBCONNECTION_34_043: [If the config is not using sas token authentication, this function shall throw an IOException.]
-            throw new IOException("AMQPS operations do not support using x509 authentication");
+            this.sasToken = null;
         }
 
         if (this.reactor == null)
@@ -280,7 +281,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
             executorService = Executors.newFixedThreadPool(1);
         }
 
-        IotHubReactor iotHubReactor = new IotHubReactor(reactor);
+        IotHubReactor iotHubReactor = new IotHubReactor(reactor, usingSasl);
         ReactorRunner reactorRunner = new ReactorRunner(iotHubReactor);
         executorService.submit(reactorRunner);
         logger.LogInfo("Reactor is assigned to executor service, method name is %s ", logger.getMethodName());
@@ -481,9 +482,12 @@ public final class AmqpsIotHubConnection extends BaseHandler
                 ((TransportInternal)transport).addTransportLayer(webSocket);
             }
 
-            // Codes_SRS_AMQPSIOTHUBCONNECTION_15_031: [The event handler shall set the SASL_PLAIN authentication on the transport using the given user name and sas token.]
-            Sasl sasl = transport.sasl();
-            sasl.plain(this.userName, this.sasToken);
+            if (this.config.getAuthenticationType() == DeviceClientConfig.AuthType.SAS_TOKEN)
+            {
+                // Codes_SRS_AMQPSIOTHUBCONNECTION_15_031: [The event handler shall set the SASL_PLAIN authentication on the transport using the given user name and sas token.]
+                Sasl sasl = transport.sasl();
+                sasl.plain(this.userName, this.sasToken);
+            }
 
             try
             {
@@ -811,6 +815,10 @@ public final class AmqpsIotHubConnection extends BaseHandler
         if (this.config.getAuthenticationType() == DeviceClientConfig.AuthType.SAS_TOKEN)
         {
             domain.setSslContext(this.config.getSasTokenAuthentication().getSSLContext());
+        }
+        else if (this.config.getAuthenticationType() == DeviceClientConfig.AuthType.X509_CERTIFICATE)
+        {
+            domain.setSslContext(this.config.getX509Authentication().getSSLContext());
         }
 
         return domain;
