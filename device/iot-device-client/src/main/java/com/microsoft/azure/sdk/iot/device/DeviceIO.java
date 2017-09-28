@@ -74,7 +74,8 @@ public final class DeviceIO
 
     private long sendPeriodInMilliseconds;
     private long receivePeriodInMilliseconds;
-
+    private int connectionTimeoutInMilliseconds;
+    
     private CustomLogger logger;
     private IotHubTransport transport;
     private DeviceClientConfig config;
@@ -142,6 +143,12 @@ public final class DeviceIO
                 /* Codes_SRS_DEVICE_IO_21_005: [If the `protocol` is not valid, the constructor shall throw an IllegalArgumentException.] */
                 // should never happen.
                 throw new IllegalStateException("Invalid client protocol specified.");
+        }
+
+        /* */
+        if (this.connectionTimeoutInMilliseconds > 0)
+        {
+            this.transport.setConnectionTimeout(this.connectionTimeoutInMilliseconds);
         }
 
         /* Codes_SRS_DEVICE_IO_21_037: [The constructor shall initialize the `sendPeriodInMilliseconds` with default value of 10 milliseconds.] */
@@ -375,6 +382,32 @@ public final class DeviceIO
 
             this.taskScheduler.scheduleAtFixedRate(this.sendTask, 0,
                     this.sendPeriodInMilliseconds, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    /**
+     * Setter for the connection timeout in milliseconds.
+     *
+     * @param newConnectionTimeoutInMilliseconds is the new connection timeout in milliseconds.
+     * @throws IOException if the task schedule exist but there is no send task function to call.
+     * @throws IllegalArgumentException if the provided interval is invalid (zero or negative).
+     */
+    public void setConnectionTimeoutInMilliseconds(int newConnectionTimeoutInMilliseconds) throws IOException
+    {
+        //TODO: Make this match some type of requirements
+        /* Codes_SRS_DEVICE_IO_xx_xx: [If the the provided interval is zero or negative, the setConnectionTimeoutInMilliseconds shall throw IllegalArgumentException.] */
+        if(newConnectionTimeoutInMilliseconds <= 0)
+        {
+            throw new IllegalArgumentException("connection timeout can not be zero or negative");
+        }
+
+        /* Codes_SRS_DEVICE_IO_xx_xxx: [The setConnectionTimeoutInMilliseconds shall store the new connection timeout in milliseconds.] */
+        this.connectionTimeoutInMilliseconds = newConnectionTimeoutInMilliseconds;
+
+        /* Codes_SRS_DEVICE_IO_xx_xx: [If the transport already exists, the setConnectionTimeoutInMilliseconds shall update the transport's connection timeout to the new value.] */
+        if(this.transport != null)
+        {
+            this.transport.setConnectionTimeout(newConnectionTimeoutInMilliseconds);
         }
     }
 

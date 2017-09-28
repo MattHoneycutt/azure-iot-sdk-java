@@ -40,6 +40,8 @@ public class HttpsConnection
      */
     private byte[] body;
 
+    private int connectionTimeoutInMilliseconds = 0;   
+
     /**
      * Constructor. Opens a connection to the given URL.
      *
@@ -251,6 +253,19 @@ public class HttpsConnection
         // Codes_SRS_HTTPSCONNECTION_11_017: [The function shall return a mapping of header field names to the values associated with the header field name.]
         // Codes_SRS_HTTPSCONNECTION_11_018: [The function shall throw an IOException if no response was received.]
         return this.connection.getHeaderFields();
+    }
+
+    /**
+     * Set the connection timeout for the given transport
+     * 
+     * @param newConnectionTimeoutInMilliseconds is the new connection timeout in milliseconds.
+     * @throws IOException if the task schedule exist but there is no send task function to call.
+     */
+    public void setConnectionTimeout(int newConnectionTimeoutInMilliseconds) {
+        this.connectionTimeoutInMilliseconds = newConnectionTimeoutInMilliseconds;
+        if (this.connection != null) {
+            this.connection.setConnectTimeout(newConnectionTimeoutInMilliseconds);
+        }
     }
 
     /**

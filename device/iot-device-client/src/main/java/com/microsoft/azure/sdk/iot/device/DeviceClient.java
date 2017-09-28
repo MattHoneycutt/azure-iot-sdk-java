@@ -645,6 +645,35 @@ public final class DeviceClient implements Closeable
         }
     }
 
+    private void setOption_SetConnectionTimeout(Object value)
+    {
+        logger.LogInfo("Setting connection timeout as %s milliseconds, method name is %s ", value, logger.getMethodName());
+
+        if (value != null)
+        {
+            // Codes_SRS_DEVICECLIENT_xx_xxx: ["SetConnectionTimeout" needs to have value type integer.]
+            if (value instanceof Integer)
+            {
+                try
+                {
+                    this.deviceIO.setConnectionTimeoutInMilliseconds(((Integer)value).intValue());
+                }
+                catch (IOException e)
+                {
+                    throw new IOError(e);
+                }
+            }
+            else
+            {
+                throw new IllegalArgumentException("value is not int = " + value);
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("value cannot be null");
+        }
+    }
+
     private void setOption_SetCertificatePath(Object value)
     {
         logger.LogInfo("Setting CertificatePath as %s, method name is %s ", value, logger.getMethodName());
@@ -799,6 +828,12 @@ public final class DeviceClient implements Closeable
                 case SET_SEND_INTERVAL:
                 {
                     setOption_SetSendInterval(value);
+                    break;
+                }
+                // Codes_SRS_DEVICECLIENT_xx_xx: ["SetConnectionTimeout" - time in milliseconds that the link can be idle before it timesout.]
+                case SET_CONNECTION_TIMEOUT:
+                {
+                    setOption_SetConnectionTimeout(value);
                     break;
                 }
                 // Codes_SRS_DEVICECLIENT_25_019: ["SetCertificatePath" - path to the certificate to verify peer.]

@@ -45,6 +45,8 @@ public final class MqttTransport implements IotHubTransport
 
     private final DeviceClientConfig config;
 
+    private int connectionTimeoutInMilliseconds = 0;
+
     /**
      * Constructs an instance from the given {@link DeviceClientConfig}
      * object.
@@ -356,5 +358,9 @@ public final class MqttTransport implements IotHubTransport
         //      receive notifications from the MQTT Connection class when the connection is lost or
         //      established.
         throw new UnsupportedOperationException();
+    }
+
+    public void setConnectionTimeout(int newConnectionTimeoutInMilliseconds) {
+        this.connectionTimeoutInMilliseconds = newConnectionTimeoutInMilliseconds;
     }
 }

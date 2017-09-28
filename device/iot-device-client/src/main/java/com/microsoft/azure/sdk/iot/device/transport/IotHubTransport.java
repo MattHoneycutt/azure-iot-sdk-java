@@ -99,4 +99,11 @@ public interface IotHubTransport extends Closeable
      * {@code null} if no callback is provided.
      */
     void registerConnectionStateCallback(IotHubConnectionStateCallback callback, Object callbackContext);
+
+    /**
+     * Set the connection timeout for the given transport
+     * 
+     * @param newConnectionTimeoutInMilliseconds is the new connection timeout in milliseconds.
+     */
+    void setConnectionTimeout(int newConnectionTimeoutInMilliseconds);
 }

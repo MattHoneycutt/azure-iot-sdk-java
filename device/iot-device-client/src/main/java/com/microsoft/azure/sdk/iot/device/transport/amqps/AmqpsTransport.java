@@ -53,6 +53,8 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
     private final CustomLogger logger;
 
     private ArrayList<AmqpsDeviceOperations> amqpsDeviceOperationsList;
+    
+    private int connectionTimeoutInMilliseconds = 0;
 
     /**
      * Constructs an instance from the given {@link DeviceClientConfig}
@@ -99,6 +101,11 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
         {
             // Codes_SRS_AMQPSTRANSPORT_15_005: [The function shall add the transport to the list of listeners subscribed to the connection events.]
             this.connection.addListener(this);
+
+            if (this.connectionTimeoutInMilliseconds > 0)
+            {
+                this.connection.setConnectionTimeout(this.connectionTimeoutInMilliseconds);
+            }
 
             this.connection.open();
         }
@@ -503,5 +510,14 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
         // Codes_SRS_AMQPSTRANSPORT_99_003: [The registerConnectionStateCallback shall register the connection state callback.]
         this.stateCallback = callback;
         this.stateCallbackContext = callbackContext;
+    }
+
+    public void setConnectionTimeout(int newConnectionTimeoutInMilliseconds) {
+        this.connectionTimeoutInMilliseconds = newConnectionTimeoutInMilliseconds;
+
+        if (this.connection != null)
+        {
+            this.connection.setConnectionTimeout(newConnectionTimeoutInMilliseconds);
+        }
     }
 }

@@ -70,6 +70,8 @@ public final class AmqpsIotHubConnection extends BaseHandler
 
     private ArrayList<AmqpsDeviceOperations> amqpsDeviceOperationsList;
 
+    private int connectionTimeoutInMilliseconds = 0;
+
     /**
      * Constructor to set up connection parameters using the {@link DeviceClientConfig}.
      *
@@ -485,6 +487,11 @@ public final class AmqpsIotHubConnection extends BaseHandler
             Sasl sasl = transport.sasl();
             sasl.plain(this.userName, this.sasToken);
 
+            // Codes_
+            if (this.connectionTimeoutInMilliseconds > 0) {
+                transport.setIdleTimeout(this.connectionTimeoutInMilliseconds);
+            }
+
             try
             {
                 SslDomain domain = makeDomain();
@@ -751,6 +758,14 @@ public final class AmqpsIotHubConnection extends BaseHandler
         listeners.add(listener);
     }
 
+    public void setConnectionTimeout(int newConnectionTimeoutInMilliseconds) {
+        this.connectionTimeoutInMilliseconds = newConnectionTimeoutInMilliseconds;
+
+        if (this.connection != null && this.connection.getTransport() != null) {
+            this.connection.getTransport().setIdleTimeout(newConnectionTimeoutInMilliseconds);
+        }
+    }    
+
     /**
      * Notifies all listeners that the connection was lost and attempts to startReconnect to the IoTHub
      * using an exponential backoff interval.
@@ -763,6 +778,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
         for(ServerListener listener : listeners)
         {
             listener.connectionLost();
+
         }
 
         if (currentReconnectionAttempt == Integer.MAX_VALUE)

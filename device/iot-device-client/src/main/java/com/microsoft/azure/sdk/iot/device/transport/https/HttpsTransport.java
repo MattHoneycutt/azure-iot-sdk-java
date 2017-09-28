@@ -52,6 +52,8 @@ public final class HttpsTransport implements IotHubTransport
 
     private final DeviceClientConfig config;
 
+    private int connectionTimeoutInMilliseconds = 0;
+
     /**
      * Constructs an instance from the given {@link DeviceClientConfig}
      * object.
@@ -372,6 +374,10 @@ public final class HttpsTransport implements IotHubTransport
         // Codes_SRS_HTTPSTRANSPORT_34_040: [This function shall register the connection state callback with the provided callback and context.]
         this.stateCallback = callback;
         this.stateCallbackContext = callbackContext;
+    }
+
+    public void setConnectionTimeout(int newConnectionTimeoutInMilliseconds) {
+        this.connectionTimeoutInMilliseconds = newConnectionTimeoutInMilliseconds;
     }
 
     /**
